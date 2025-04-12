@@ -44,6 +44,7 @@ static gboolean start_hidden = FALSE;
 static gint idle_timeout = 15;
 
 static gchar *gtk_theme = NULL;
+static gchar *gtk_prefer_dark_theme = NULL;
 static gchar *config_path = NULL;
 static gchar *style_path = NULL;
 static gchar *layout_path = NULL;
@@ -64,6 +65,7 @@ static GOptionEntry main_entries[] = {
 
 static GOptionEntry config_entries[] = {
 	{ "gtk-theme", 'g', 0, G_OPTION_ARG_STRING, &gtk_theme, "Set GTK theme", NULL },
+	{ "gtk-prefer-dark-theme", 0, 0, G_OPTION_ARG_STRING, &gtk_prefer_dark_theme, "Whether to prefer a dark GTK theme", NULL },
 	{ "style", 's', 0, G_OPTION_ARG_FILENAME, &style_path, "Load CSS style file", NULL },
 	{ "layout", 'x', 0, G_OPTION_ARG_FILENAME, &layout_path, "Load XML layout file", NULL },
 	{ "modules", 'm', 0, G_OPTION_ARG_FILENAME_ARRAY, &module_path, "Load gtklock modules", NULL },
@@ -329,6 +331,10 @@ int main(int argc, char **argv) {
 	if(gtk_theme) {
 		GtkSettings *settings = gtk_settings_get_default();
 		g_object_set(settings, "gtk-theme-name", gtk_theme, NULL);
+		if(gtk_prefer_dark_theme) {
+			gboolean value = g_ascii_strcasecmp(gtk_prefer_dark_theme, (char *)"true") ? FALSE : TRUE;
+			g_object_set(settings, "gtk-application-prefer-dark-theme", value, NULL);
+		}
 	}
 
 	struct GtkLock g = {};
